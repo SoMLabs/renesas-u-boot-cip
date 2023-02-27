@@ -1,0 +1,15 @@
+if TARGET_VISIONSOM_X2L
+
+config SYS_SOC
+	default "rmobile"
+
+config SYS_BOARD
+	default "visionsom-x2l"
+
+config SYS_VENDOR
+	default "somlabs"
+
+config SYS_CONFIG_NAME
+	default "visionsom-x2l"
+
+endif

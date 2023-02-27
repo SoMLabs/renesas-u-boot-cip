@@ -1,0 +1,113 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Device Tree Source for VisionSOM-V2L board
+ *
+ * Copyright (C) 2023 Somlabs
+ */
+
+/dts-v1/;
+#include <dt-bindings/gpio/gpio.h>
+#include "r9a07g054l.dtsi"
+#include "r9a07g054l-u-boot.dtsi"
+#include <dt-bindings/pinctrl/rzv2l-pinctrl.h>
+
+/ {
+	model = "SomLabs-VisionSOM-V2L";
+	compatible = "renesas,r9a07g054l", "renesas,rzv2l";
+
+	aliases {
+		serial0 = &scif0;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+	memory@48000000 {
+		device_type = "memory";
+		/* first 128MB is reserved for secure area. */
+		reg = <0 0x48000000 0 0x38000000>;
+	};
+
+};
+
+&pinctrl {
+	eth0_pins: eth0 {
+		pinmux = <RZV2L_PINMUX(20, 0, 1)>,
+				<RZV2L_PINMUX(20, 1, 1)>,
+				<RZV2L_PINMUX(20, 2, 1)>,
+				<RZV2L_PINMUX(21, 0, 1)>,
+				<RZV2L_PINMUX(21, 1, 1)>,
+				<RZV2L_PINMUX(22, 0, 1)>,
+				<RZV2L_PINMUX(22, 1, 1)>,
+				<RZV2L_PINMUX(23, 0, 1)>,
+				<RZV2L_PINMUX(23, 1, 1)>,
+				<RZV2L_PINMUX(24, 0, 1)>,
+				<RZV2L_PINMUX(24, 1, 1)>,
+				<RZV2L_PINMUX(25, 0, 1)>,
+				<RZV2L_PINMUX(25, 1, 1)>,
+				<RZV2L_PINMUX(26, 0, 1)>,
+				<RZV2L_PINMUX(26, 1, 1)>,
+				<RZV2L_PINMUX(27, 0, 1)>,
+				<RZV2L_PINMUX(27, 1, 1)>,
+				<RZV2L_PINMUX(28, 0, 1)>,
+				<RZV2L_PINMUX(28, 1, 1)>;
+	};
+
+	i2c2_pins: i2c2 {
+		pinmux = <RZV2L_PINMUX(42, 3, 1)>, /* SDA */
+				 <RZV2L_PINMUX(42, 4, 1)>; /* SCL */
+	};
+
+	i2c3_pins: i2c3 {
+		pinmux = <RZV2L_PINMUX(46, 2, 4)>, /* SDA */
+				 <RZV2L_PINMUX(46, 3, 4)>; /* SCL */
+	};
+
+};
+
+&xinclk {
+        clock-frequency = <24000000>;
+};
+
+&scif0 {
+	status = "okay";
+	clock = <100000000>;
+};
+
+&sdhi0 {
+	bus-width = <8>;
+	status = "okay";
+};
+
+&eth0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&eth0_pins>;
+	status = "okay";
+
+	phy-handle = <&phy0>;
+	phy-mode = "rgmii";
+	phy0: ethernet-phy@1 {
+		reg = <1>;
+	};
+};
+
+&i2c2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c2_pins>;
+	status = "okay";
+};
+
+&i2c3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c3_pins>;
+	status = "okay";
+};
+
+&ehci0 {
+	status = "okay";
+};
+
+&ehci1 {
+	status = "okay";
+};
