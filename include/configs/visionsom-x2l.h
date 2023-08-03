@@ -59,6 +59,28 @@
 
 /* ENV setting */
 
+#define USB_FLASHER_CMD \
+	"setenv soc g2l; " \
+	"if usb start; then " \
+		"mmc dev 0; " \
+		"if load usb 0:1 $loadaddr core-image-bsp-visionsom-${soc}-cb.wic; then " \
+			"setexpr writesize ${filesize} / 0x200; " \
+			"mmc write $loadaddr 0 $writesize; " \
+		"elif load usb 0:1 $loadaddr core-image-bsp-visionsom-${soc}-cb.simg; then " \
+			"mmc swrite $loadaddr 0; " \
+		"fi; " \
+		"if load usb 0:1 $loadaddr fip-visionsom-${soc}-cb.bin; then " \
+			"setexpr writesize ${filesize} / 0x200; " \
+			"mmc dev 0 1; " \
+			"mmc write $loadaddr 0x100 $writesize; " \
+		"fi; " \
+		"if load usb 0:1 $loadaddr bl2_bp-visionsom-${soc}-cb.bin; then " \
+			"setexpr writesize ${filesize} / 0x200; " \
+			"mmc dev 0 1; " \
+			"mmc write $loadaddr 0x1 $writesize; " \
+		"fi; " \
+	"fi "
+
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"usb_pgood_delay=2000\0" \
 	"bootm_size=0x10000000 \0" \
@@ -66,17 +88,13 @@
 	"usbbootargs=setenv bootargs earlycon root=/dev/sda1 rw rootwait \0" \
 	"bootimage=booti 0x48080000 - 0x48000000 \0" \
 	"emmcload=ext4load mmc 0:1 0x48080000 boot/Image; ext4load mmc 0:1 0x48000000 boot/" CONFIG_DEFAULT_FDT_FILE "\0" \
-	"usbboot=if usb start; then " \
-				"ext4load usb 0:1 0x48080000 boot/Image; " \
-				"ext4load usb 0:1 0x48000000 boot/" CONFIG_DEFAULT_FDT_FILE "; " \
-				"run usbbootargs; " \
-				"fi\0"
+	"usbflash=" USB_FLASHER_CMD "reset; \0"
 
 #define CONFIG_BOOTCOMMAND	"env default -a; "\
 							"if run emmcload; then " \
 								"run emmcbootargs; run bootimage; " \
 							"else " \
-								"run usbboot; run bootimage; " \
+								"run usbflash; " \
 							"fi"
 
 /* For board */
