@@ -59,8 +59,16 @@
 
 /* ENV setting */
 
+#ifdef CONFIG_R9A07G044L
+#define SOC_TYPE "g2l"
+#elif CONFIG_R9A07G054L
+#define SOC_TYPE "v2l"
+#else
+#error "Wrong SOC type"
+#endif
+
 #define USB_FLASHER_CMD \
-	"setenv soc g2l; " \
+	"setenv soc " SOC_TYPE "; " \
 	"if usb start; then " \
 		"mmc dev 0; " \
 		"if load usb 0 $loadaddr somlabs-image-visionsom-${soc}-cb.wic; then " \
@@ -79,7 +87,7 @@
 			"mmc dev 0 1; " \
 			"mmc write $loadaddr 0x1 $writesize; " \
 		"fi; " \
-	"fi "
+	"fi; "
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"usb_pgood_delay=2000\0" \
