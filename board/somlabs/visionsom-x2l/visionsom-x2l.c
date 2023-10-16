@@ -176,5 +176,23 @@ int board_init(void)
 
 void reset_cpu(void)
 {
+	// Write 0x01 (Cold reset bit) to RAA215300 PMIC (0x12 addr) on I2C3.
+        struct udevice *dev;
+        struct udevice *bus;
+        const u8 pmic_bus = 3;
+        const u8 pmic_addr = 0x12;
+        const u8 cold_reset_reg = 0x6d;
+        const u8 cold_reset_value = 0x01;
+        int ret;
 
+        ret = uclass_get_device_by_seq(UCLASS_I2C, pmic_bus, &bus);
+        if (ret)
+	        hang();
+
+        ret = i2c_get_chip(bus, pmic_addr, 1, &dev);
+        if (ret)
+	        hang();
+
+        dm_i2c_write(dev, cold_reset_reg, &cold_reset_value, 1);
+        hang();
 }
